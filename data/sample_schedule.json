@@ -1,0 +1,60 @@
+{
+  "date": "2026-05-04",
+  "timezone": "Asia/Seoul",
+  "schedules": [
+    {
+      "id": "evt-001",
+      "title": "Product metrics review",
+      "category": "work",
+      "start": "2026-05-04 09:00",
+      "end": "2026-05-04 10:00",
+      "location": "Zoom",
+      "notes": "Review activation, retention, and briefing completion metrics."
+    },
+    {
+      "id": "evt-002",
+      "title": "Customer discovery call",
+      "category": "client",
+      "start": "2026-05-04 09:45",
+      "end": "2026-05-04 10:30",
+      "location": "Google Meet",
+      "notes": "Validate pain points around meeting preparation."
+    },
+    {
+      "id": "evt-003",
+      "title": "AI agent roadmap planning",
+      "category": "work",
+      "start": "2026-05-04 10:40",
+      "end": "2026-05-04 12:00",
+      "location": "Conference Room A",
+      "notes": "Prioritize LangGraph and evaluation milestones."
+    },
+    {
+      "id": "evt-004",
+      "title": "Lunch with mentor",
+      "category": "networking",
+      "start": "2026-05-04 12:00",
+      "end": "2026-05-04 13:00",
+      "location": "Gangnam",
+      "notes": "Discuss AI product role portfolio strategy."
+    },
+    {
+      "id": "evt-005",
+      "title": "Agent design reading block",
+      "category": "learning",
+      "start": "2026-05-04 14:00",
+      "end": "2026-05-04 15:30",
+      "location": "Desk",
+      "notes": "Read papers and notes on tool-using agents."
+    },
+    {
+      "id": "evt-006",
+      "title": "Workout",
+      "category": "health",
+      "start": "2026-05-04 18:30",
+      "end": "2026-05-04 19:30",
+      "location": "Gym",
+      "notes": "Keep energy stable after meeting-heavy morning."
+    }
+  ]
+}
