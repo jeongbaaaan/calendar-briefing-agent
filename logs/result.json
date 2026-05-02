@@ -1,0 +1,111 @@
+{
+  "input_file": "/Users/jeongbinjang/Documents/Codex/2026-05-02/i-want-to-build-a-small/calendar-briefing-agent/data/sample_schedule.json",
+  "analysis": {
+    "total_schedules": 6,
+    "total_scheduled_hours": 6.58,
+    "category_distribution": {
+      "client": 1,
+      "health": 1,
+      "learning": 1,
+      "networking": 1,
+      "work": 2
+    },
+    "schedule_conflicts": [
+      {
+        "first": "Product metrics review",
+        "second": "Customer discovery call",
+        "overlap_minutes": 15
+      }
+    ],
+    "insufficient_buffer_time": [
+      {
+        "previous": "Customer discovery call",
+        "next": "AI agent roadmap planning",
+        "buffer_minutes": 10,
+        "recommended_minimum_minutes": 15
+      },
+      {
+        "previous": "AI agent roadmap planning",
+        "next": "Lunch with mentor",
+        "buffer_minutes": 0,
+        "recommended_minimum_minutes": 15
+      }
+    ],
+    "minimum_buffer_minutes": 15
+  },
+  "briefing": {
+    "summary": "You have 6 scheduled item(s) totaling 6.58 hour(s). Today looks like a Work-Focused Planner day: A work-heavy schedule where meeting load and focus protection matter most.",
+    "persona": {
+      "name": "Work-Focused Planner",
+      "rationale": "A work-heavy schedule where meeting load and focus protection matter most."
+    },
+    "schedule_list": [
+      {
+        "id": "evt-001",
+        "title": "Product metrics review",
+        "category": "work",
+        "start": "2026-05-04 09:00",
+        "end": "2026-05-04 10:00",
+        "duration_hours": 1.0,
+        "location": "Zoom",
+        "notes": "Review activation, retention, and briefing completion metrics."
+      },
+      {
+        "id": "evt-002",
+        "title": "Customer discovery call",
+        "category": "client",
+        "start": "2026-05-04 09:45",
+        "end": "2026-05-04 10:30",
+        "duration_hours": 0.75,
+        "location": "Google Meet",
+        "notes": "Validate pain points around meeting preparation."
+      },
+      {
+        "id": "evt-003",
+        "title": "AI agent roadmap planning",
+        "category": "work",
+        "start": "2026-05-04 10:40",
+        "end": "2026-05-04 12:00",
+        "duration_hours": 1.33,
+        "location": "Conference Room A",
+        "notes": "Prioritize LangGraph and evaluation milestones."
+      },
+      {
+        "id": "evt-004",
+        "title": "Lunch with mentor",
+        "category": "networking",
+        "start": "2026-05-04 12:00",
+        "end": "2026-05-04 13:00",
+        "duration_hours": 1.0,
+        "location": "Gangnam",
+        "notes": "Discuss AI product role portfolio strategy."
+      },
+      {
+        "id": "evt-005",
+        "title": "Agent design reading block",
+        "category": "learning",
+        "start": "2026-05-04 14:00",
+        "end": "2026-05-04 15:30",
+        "duration_hours": 1.5,
+        "location": "Desk",
+        "notes": "Read papers and notes on tool-using agents."
+      },
+      {
+        "id": "evt-006",
+        "title": "Workout",
+        "category": "health",
+        "start": "2026-05-04 18:30",
+        "end": "2026-05-04 19:30",
+        "duration_hours": 1.0,
+        "location": "Gym",
+        "notes": "Keep energy stable after meeting-heavy morning."
+      }
+    ],
+    "risk_message": "1 schedule conflict(s) need attention. 2 transition(s) have insufficient buffer time.",
+    "recommended_actions": [
+      "Resolve overlapping events before the day starts.",
+      "Add at least 15 minutes between tight transitions.",
+      "Block one uninterrupted focus window for the highest-leverage task."
+    ]
+  }
+}
