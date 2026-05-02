@@ -43,7 +43,7 @@ def run_analysis() -> dict[str, object]:
 st.set_page_config(page_title="캘린더 브리핑 에이전트", layout="wide")
 
 st.title("캘린더 브리핑 에이전트")
-st.caption("일정 데이터를 분석해 사용자 페르소나와 데일리 브리핑을 생성하는 로컬 MVP입니다.")
+st.caption("일정 데이터를 분석해 사용자 페르소나와 데일리 브리핑을 생성하는 로컬 최소 기능 제품입니다.")
 
 st.subheader("일정 목록")
 schedule_rows = load_schedules()
