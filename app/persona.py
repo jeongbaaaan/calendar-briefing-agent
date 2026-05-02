@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 
-WORK_CATEGORIES = {"work", "meeting", "client", "operations"}
-GROWTH_CATEGORIES = {"learning", "study", "exercise", "networking"}
-LIFE_CATEGORIES = {"personal", "family", "health", "social", "errand"}
+WORK_CATEGORIES = {"work", "meeting", "client", "operations", "업무", "회의", "고객", "운영"}
+GROWTH_CATEGORIES = {"learning", "study", "exercise", "networking", "학습", "공부", "운동", "네트워킹"}
+LIFE_CATEGORIES = {"personal", "family", "health", "social", "errand", "개인", "가족", "건강", "소셜", "심부름"}
 
 
 def classify_persona(analysis: dict[str, Any]) -> dict[str, str]:
@@ -15,8 +15,8 @@ def classify_persona(analysis: dict[str, Any]) -> dict[str, str]:
 
     if total_schedules <= 2 or total_hours < 3:
         return _persona(
-            "Light Scheduler",
-            "A low-density day with enough open space for reactive work or recovery.",
+            "가벼운 일정형",
+            "일정 밀도가 낮아 즉흥 업무나 회복을 위한 여유가 있는 하루입니다.",
         )
 
     work_count = _count_categories(distribution, WORK_CATEGORIES)
@@ -30,25 +30,25 @@ def classify_persona(analysis: dict[str, Any]) -> dict[str, str]:
 
     if work_ratio >= 0.5 or total_hours >= 7:
         return _persona(
-            "Work-Focused Planner",
-            "A work-heavy schedule where meeting load and focus protection matter most.",
+            "업무 집중형 플래너",
+            "업무 비중이 높아 회의 부담 관리와 집중 시간 확보가 중요한 하루입니다.",
         )
 
     if growth_ratio >= 0.35:
         return _persona(
-            "Growth-Oriented Planner",
-            "A day shaped around learning, health, or skill-building commitments.",
+            "성장 지향형 플래너",
+            "학습, 건강, 역량 개발 일정이 중심이 되는 하루입니다.",
         )
 
     if life_ratio >= 0.35 and work_ratio < 0.5:
         return _persona(
-            "Life-Balanced Planner",
-            "A schedule that mixes professional commitments with personal priorities.",
+            "균형 생활형 플래너",
+            "업무 일정과 개인 우선순위가 함께 배치된 균형형 일정입니다.",
         )
 
     return _persona(
-        "Life-Balanced Planner",
-        "A mixed schedule without a single dominant category.",
+        "균형 생활형 플래너",
+        "특정 카테고리에 지나치게 치우치지 않은 혼합형 일정입니다.",
     )
 
 
