@@ -4,29 +4,29 @@
     "total_schedules": 6,
     "total_scheduled_hours": 6.58,
     "category_distribution": {
-      "client": 1,
-      "health": 1,
-      "learning": 1,
-      "networking": 1,
-      "work": 2
+      "건강": 1,
+      "고객": 1,
+      "네트워킹": 1,
+      "업무": 2,
+      "학습": 1
     },
     "schedule_conflicts": [
       {
-        "first": "Product metrics review",
-        "second": "Customer discovery call",
+        "first": "제품 지표 리뷰",
+        "second": "고객 인터뷰",
         "overlap_minutes": 15
       }
     ],
     "insufficient_buffer_time": [
       {
-        "previous": "Customer discovery call",
-        "next": "AI agent roadmap planning",
+        "previous": "고객 인터뷰",
+        "next": "인공지능 에이전트 로드맵 기획",
         "buffer_minutes": 10,
         "recommended_minimum_minutes": 15
       },
       {
-        "previous": "AI agent roadmap planning",
-        "next": "Lunch with mentor",
+        "previous": "인공지능 에이전트 로드맵 기획",
+        "next": "멘토와 점심",
         "buffer_minutes": 0,
         "recommended_minimum_minutes": 15
       }
@@ -34,78 +34,78 @@
     "minimum_buffer_minutes": 15
   },
   "briefing": {
-    "summary": "You have 6 scheduled item(s) totaling 6.58 hour(s). Today looks like a Work-Focused Planner day: A work-heavy schedule where meeting load and focus protection matter most.",
+    "summary": "오늘은 총 6개의 일정이 있으며, 전체 일정 시간은 6.58시간입니다. 오늘의 유형은 '업무 집중형 플래너'입니다. 업무 비중이 높아 회의 부담 관리와 집중 시간 확보가 중요한 하루입니다.",
     "persona": {
-      "name": "Work-Focused Planner",
-      "rationale": "A work-heavy schedule where meeting load and focus protection matter most."
+      "name": "업무 집중형 플래너",
+      "rationale": "업무 비중이 높아 회의 부담 관리와 집중 시간 확보가 중요한 하루입니다."
     },
     "schedule_list": [
       {
         "id": "evt-001",
-        "title": "Product metrics review",
-        "category": "work",
+        "title": "제품 지표 리뷰",
+        "category": "업무",
         "start": "2026-05-04 09:00",
         "end": "2026-05-04 10:00",
         "duration_hours": 1.0,
-        "location": "Zoom",
-        "notes": "Review activation, retention, and briefing completion metrics."
+        "location": "줌",
+        "notes": "활성화, 리텐션, 브리핑 완료율 지표를 검토합니다."
       },
       {
         "id": "evt-002",
-        "title": "Customer discovery call",
-        "category": "client",
+        "title": "고객 인터뷰",
+        "category": "고객",
         "start": "2026-05-04 09:45",
         "end": "2026-05-04 10:30",
         "duration_hours": 0.75,
-        "location": "Google Meet",
-        "notes": "Validate pain points around meeting preparation."
+        "location": "구글 미트",
+        "notes": "회의 준비 과정의 불편함을 검증합니다."
       },
       {
         "id": "evt-003",
-        "title": "AI agent roadmap planning",
-        "category": "work",
+        "title": "인공지능 에이전트 로드맵 기획",
+        "category": "업무",
         "start": "2026-05-04 10:40",
         "end": "2026-05-04 12:00",
         "duration_hours": 1.33,
-        "location": "Conference Room A",
-        "notes": "Prioritize LangGraph and evaluation milestones."
+        "location": "회의실 A",
+        "notes": "랭그래프와 평가 체계 구축 우선순위를 정합니다."
       },
       {
         "id": "evt-004",
-        "title": "Lunch with mentor",
-        "category": "networking",
+        "title": "멘토와 점심",
+        "category": "네트워킹",
         "start": "2026-05-04 12:00",
         "end": "2026-05-04 13:00",
         "duration_hours": 1.0,
-        "location": "Gangnam",
-        "notes": "Discuss AI product role portfolio strategy."
+        "location": "강남",
+        "notes": "인공지능 제품 역할 포트폴리오 전략을 논의합니다."
       },
       {
         "id": "evt-005",
-        "title": "Agent design reading block",
-        "category": "learning",
+        "title": "에이전트 설계 리딩 블록",
+        "category": "학습",
         "start": "2026-05-04 14:00",
         "end": "2026-05-04 15:30",
         "duration_hours": 1.5,
-        "location": "Desk",
-        "notes": "Read papers and notes on tool-using agents."
+        "location": "책상",
+        "notes": "도구 사용 에이전트 관련 자료와 노트를 읽습니다."
       },
       {
         "id": "evt-006",
-        "title": "Workout",
-        "category": "health",
+        "title": "운동",
+        "category": "건강",
         "start": "2026-05-04 18:30",
         "end": "2026-05-04 19:30",
         "duration_hours": 1.0,
-        "location": "Gym",
-        "notes": "Keep energy stable after meeting-heavy morning."
+        "location": "헬스장",
+        "notes": "회의가 많은 오전 이후 에너지를 회복합니다."
       }
     ],
-    "risk_message": "1 schedule conflict(s) need attention. 2 transition(s) have insufficient buffer time.",
+    "risk_message": "겹치는 일정 1건을 확인해야 합니다. 이동 또는 전환 시간이 부족한 구간이 2건 있습니다.",
     "recommended_actions": [
-      "Resolve overlapping events before the day starts.",
-      "Add at least 15 minutes between tight transitions.",
-      "Block one uninterrupted focus window for the highest-leverage task."
+      "하루를 시작하기 전에 겹치는 일정을 먼저 조정하세요.",
+      "일정 사이에 최소 15분 이상의 전환 시간을 확보하세요.",
+      "가장 중요한 업무를 위해 방해받지 않는 집중 시간을 하나 확보하세요."
     ]
   }
 }
