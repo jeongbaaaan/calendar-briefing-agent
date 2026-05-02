@@ -40,36 +40,45 @@ def run_analysis() -> dict[str, object]:
     }
 
 
-st.set_page_config(page_title="Calendar Briefing Agent", layout="wide")
+st.set_page_config(page_title="캘린더 브리핑 에이전트", layout="wide")
 
-st.title("Calendar Briefing Agent")
-st.caption("Local MVP for schedule analysis, persona classification, and daily briefing generation.")
+st.title("캘린더 브리핑 에이전트")
+st.caption("일정 데이터를 분석해 사용자 페르소나와 데일리 브리핑을 생성하는 로컬 MVP입니다.")
 
-st.subheader("Schedule")
+st.subheader("일정 목록")
 schedule_rows = load_schedules()
 st.dataframe(
     schedule_rows,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
     column_order=["title", "category", "start", "end", "duration_hours", "location", "notes"],
+    column_config={
+        "title": "일정명",
+        "category": "카테고리",
+        "start": "시작 시간",
+        "end": "종료 시간",
+        "duration_hours": "소요 시간",
+        "location": "장소",
+        "notes": "메모",
+    },
 )
 
-if st.button("Analyze Schedule", type="primary"):
+if st.button("일정 분석하기", type="primary"):
     result = run_analysis()
     analysis = result["analysis"]
     persona = result["persona"]
     briefing = result["briefing"]
 
-    st.subheader("Briefing")
-    st.metric("Persona", persona["name"])
+    st.subheader("데일리 브리핑")
+    st.metric("사용자 페르소나", persona["name"])
     st.write(persona["rationale"])
 
     metric_columns = st.columns(2)
-    metric_columns[0].metric("Total Schedules", analysis["total_schedules"])
-    metric_columns[1].metric("Total Scheduled Hours", analysis["total_scheduled_hours"])
+    metric_columns[0].metric("전체 일정 수", analysis["total_schedules"])
+    metric_columns[1].metric("총 일정 시간", analysis["total_scheduled_hours"])
 
     st.warning(briefing["risk_message"])
 
-    st.subheader("Recommended Actions")
+    st.subheader("추천 액션")
     for action in briefing["recommended_actions"]:
         st.markdown(f"- {action}")
