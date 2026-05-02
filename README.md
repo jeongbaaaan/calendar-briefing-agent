@@ -17,7 +17,7 @@ app/analyzer.py   일정 수, 총 일정 시간, 카테고리 분포, 일정 충
 app/persona.py    분석 결과를 바탕으로 사용자 페르소나를 분류합니다.
 app/briefing.py   사용자에게 보여줄 데일리 브리핑 결과를 생성합니다.
 data/             샘플 캘린더 입력 데이터를 저장합니다.
-app_ui.py         샘플 일정을 확인하고 분석할 수 있는 Streamlit UI입니다.
+app_ui.py         샘플 일정을 확인하고 분석할 수 있는 한국어 Streamlit UI입니다.
 logs/             생성된 결과 파일(result.json)을 저장합니다.
 ```
 
@@ -42,7 +42,7 @@ logs/             생성된 결과 파일(result.json)을 저장합니다.
   - 일정 목록
   - 리스크 메시지
   - 추천 액션
-- Streamlit UI에서 일정 확인 및 분석 실행
+- 한국어 Streamlit UI에서 일정 확인 및 분석 실행
 - 분석 결과를 `logs/result.json`에 저장
 
 ## CLI 실행 방법
@@ -75,7 +75,7 @@ pip install -r requirements.txt
 streamlit run app_ui.py
 ```
 
-UI에서는 기본적으로 `data/sample_schedule.json`을 불러오고, 일정 목록을 확인한 뒤 `Analyze Schedule` 버튼을 눌러 분석 결과를 볼 수 있습니다.
+UI는 한국어로 표시됩니다. 기본적으로 `data/sample_schedule.json`을 불러오고, 일정 목록을 확인한 뒤 `일정 분석하기` 버튼을 눌러 분석 결과를 볼 수 있습니다.
 
 ## 출력 예시
 
