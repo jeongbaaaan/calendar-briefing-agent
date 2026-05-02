@@ -11,6 +11,7 @@ app/analyzer.py   Computes schedule statistics, category distribution, conflicts
 app/persona.py    Classifies the user's planning persona from analyzed calendar patterns.
 app/briefing.py   Produces the user-facing daily briefing payload.
 data/             Stores sample calendar input.
+app_ui.py         Provides a simple Streamlit UI for exploring the sample schedule and briefing.
 logs/             Stores generated output such as result.json.
 ```
 
@@ -34,6 +35,7 @@ The code is modular by design. Future agent capabilities can be introduced witho
   - schedule list
   - risk message
   - recommended actions
+- Provides a simple Streamlit UI for viewing and analyzing the sample schedule
 - Saves the result to `logs/result.json`
 
 ## How To Run
@@ -50,7 +52,21 @@ The generated briefing will be written to:
 logs/result.json
 ```
 
-No external packages are required for this MVP.
+The CLI uses only the Python standard library. The Streamlit UI requires the dependency listed in `requirements.txt`.
+
+## Run The Streamlit UI
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the UI from the project root:
+
+```bash
+streamlit run app_ui.py
+```
 
 ## Example Output
 
