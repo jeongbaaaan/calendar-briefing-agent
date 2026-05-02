@@ -4,57 +4,57 @@
   "schedules": [
     {
       "id": "evt-001",
-      "title": "Product metrics review",
-      "category": "work",
+      "title": "제품 지표 리뷰",
+      "category": "업무",
       "start": "2026-05-04 09:00",
       "end": "2026-05-04 10:00",
-      "location": "Zoom",
-      "notes": "Review activation, retention, and briefing completion metrics."
+      "location": "줌",
+      "notes": "활성화, 리텐션, 브리핑 완료율 지표를 검토합니다."
     },
     {
       "id": "evt-002",
-      "title": "Customer discovery call",
-      "category": "client",
+      "title": "고객 인터뷰",
+      "category": "고객",
       "start": "2026-05-04 09:45",
       "end": "2026-05-04 10:30",
-      "location": "Google Meet",
-      "notes": "Validate pain points around meeting preparation."
+      "location": "구글 미트",
+      "notes": "회의 준비 과정의 불편함을 검증합니다."
     },
     {
       "id": "evt-003",
-      "title": "AI agent roadmap planning",
-      "category": "work",
+      "title": "인공지능 에이전트 로드맵 기획",
+      "category": "업무",
       "start": "2026-05-04 10:40",
       "end": "2026-05-04 12:00",
-      "location": "Conference Room A",
-      "notes": "Prioritize LangGraph and evaluation milestones."
+      "location": "회의실 A",
+      "notes": "랭그래프와 평가 체계 구축 우선순위를 정합니다."
     },
     {
       "id": "evt-004",
-      "title": "Lunch with mentor",
-      "category": "networking",
+      "title": "멘토와 점심",
+      "category": "네트워킹",
       "start": "2026-05-04 12:00",
       "end": "2026-05-04 13:00",
-      "location": "Gangnam",
-      "notes": "Discuss AI product role portfolio strategy."
+      "location": "강남",
+      "notes": "인공지능 제품 역할 포트폴리오 전략을 논의합니다."
     },
     {
       "id": "evt-005",
-      "title": "Agent design reading block",
-      "category": "learning",
+      "title": "에이전트 설계 리딩 블록",
+      "category": "학습",
       "start": "2026-05-04 14:00",
       "end": "2026-05-04 15:30",
-      "location": "Desk",
-      "notes": "Read papers and notes on tool-using agents."
+      "location": "책상",
+      "notes": "도구 사용 에이전트 관련 자료와 노트를 읽습니다."
     },
     {
       "id": "evt-006",
-      "title": "Workout",
-      "category": "health",
+      "title": "운동",
+      "category": "건강",
       "start": "2026-05-04 18:30",
       "end": "2026-05-04 19:30",
-      "location": "Gym",
-      "notes": "Keep energy stable after meeting-heavy morning."
+      "location": "헬스장",
+      "notes": "회의가 많은 오전 이후 에너지를 회복합니다."
     }
   ]
 }
