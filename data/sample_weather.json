@@ -1,0 +1,14 @@
+{
+  "date": "2026-05-04",
+  "location": "서울 강남",
+  "weather": {
+    "condition": "맑음",
+    "temperature_c": 24,
+    "feels_like_c": 25,
+    "precipitation_probability": 10,
+    "uv_index": 7,
+    "humidity_percent": 42,
+    "air_quality": "보통",
+    "summary": "맑고 자외선이 높은 편이라 외부 이동 시 햇빛 관리가 필요합니다."
+  }
+}

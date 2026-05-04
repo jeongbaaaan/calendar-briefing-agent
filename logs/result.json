@@ -1,5 +1,6 @@
 {
-  "input_file": "/Users/jeongbinjang/Documents/Codex/2026-05-02/i-want-to-build-a-small/calendar-briefing-agent/data/sample_schedule.json",
+  "input_file": "data/sample_schedule.json",
+  "weather_file": "data/sample_weather.json",
   "analysis": {
     "total_schedules": 6,
     "total_scheduled_hours": 6.58,
@@ -107,5 +108,101 @@
       "일정 사이에 최소 15분 이상의 전환 시간을 확보하세요.",
       "가장 중요한 업무를 위해 방해받지 않는 집중 시간을 하나 확보하세요."
     ]
+  },
+  "day_context": {
+    "weather": {
+      "date": "2026-05-04",
+      "location": "서울 강남",
+      "weather": {
+        "condition": "맑음",
+        "temperature_c": 24,
+        "feels_like_c": 25,
+        "precipitation_probability": 10,
+        "uv_index": 7,
+        "humidity_percent": 42,
+        "air_quality": "보통",
+        "summary": "맑고 자외선이 높은 편이라 외부 이동 시 햇빛 관리가 필요합니다."
+      }
+    },
+    "outdoor": {
+      "count": 1,
+      "titles": [
+        "멘토와 점심"
+      ],
+      "has_many": false
+    },
+    "meal": {
+      "meal_titles": [
+        "멘토와 점심"
+      ],
+      "has_lunch_plan": true,
+      "has_dinner_plan": false,
+      "lunch_window_is_busy": true,
+      "dinner_window_is_busy": true
+    },
+    "energy": {
+      "level": "보통",
+      "score": 5,
+      "drivers": [
+        "대화/회의성 일정 2개",
+        "20분 미만 전환 구간 2개",
+        "외부 이동 가능 일정 1개"
+      ]
+    },
+    "body": {
+      "has_physical_activity": true,
+      "physical_titles": [
+        "운동"
+      ]
+    },
+    "care_flags": {
+      "sun_protection": true,
+      "rain_gear": false,
+      "hydration": true,
+      "skin_moisture": true,
+      "air_quality_care": false,
+      "recovery_break": false,
+      "meal_timing": false
+    }
+  },
+  "life_coach": {
+    "headline": "오늘은 6개의 일정과 6.58시간의 계획이 있습니다. 업무 집중형 플래너 성향이 강하고, 외부 이동 가능 일정은 1개이며 에너지 소모는 보통 수준으로 예상됩니다.",
+    "weather_care": [
+      "서울 강남 날씨는 맑음, 체감 25도입니다. 외부 이동 전 옷차림을 한 번 점검하세요.",
+      "기온이 높은 편이라 물을 가까이에 두고 이동 전후로 수분을 보충하세요."
+    ],
+    "skin_care": [
+      "자외선 지수 7로 높은 편입니다. 외출 전 선크림을 바르세요.",
+      "습도 42%로 건조한 편입니다. 세안 후 보습을 조금 더 신경 쓰세요.",
+      "운동이나 더운 날씨가 포함되어 있어 피부와 컨디션을 위해 물 섭취를 늘리세요."
+    ],
+    "mental_care": [
+      "오늘 에너지 소모 요인: 대화/회의성 일정 2개, 20분 미만 전환 구간 2개, 외부 이동 가능 일정 1개.",
+      "일정 사이 짧은 전환 시간에는 메시지 확인보다 호흡 정리와 다음 일정 준비를 우선하세요."
+    ],
+    "meal_care": [
+      "점심 일정이 잡혀 있습니다. 오전 회의가 끝난 뒤 바로 이동할 수 있게 준비 시간을 남겨두세요.",
+      "운동 일정이 있어 운동 1-2시간 전에는 부담이 적은 식사와 수분 보충을 추천합니다.",
+      "저녁 시간대에 일정이 있습니다. 늦은 폭식을 피하려면 이동 전에 간단히 먹을 것을 정해두세요."
+    ],
+    "prep_checklist": [
+      {
+        "item": "물",
+        "reason": "수분 보충은 일정 밀도와 컨디션 관리의 기본값입니다."
+      },
+      {
+        "item": "선크림",
+        "reason": "자외선이 높은 외부 이동 가능 일정이 있습니다."
+      },
+      {
+        "item": "운동복 또는 여분 옷",
+        "reason": "운동 후 컨디션과 피부 관리에 도움이 됩니다."
+      }
+    ],
+    "signals": {
+      "outdoor_schedule_count": 1,
+      "energy_level": "보통",
+      "weather_summary": "맑고 자외선이 높은 편이라 외부 이동 시 햇빛 관리가 필요합니다."
+    }
   }
 }

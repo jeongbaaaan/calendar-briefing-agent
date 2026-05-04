@@ -1,108 +1,112 @@
 # Calendar Briefing Agent
 
-Calendar Briefing Agent는 사용자의 하루 캘린더 데이터를 분석하고, 일정 패턴에 따라 사용자 페르소나를 분류한 뒤, 개인화된 데일리 브리핑을 생성하는 파이썬 최소 기능 제품입니다.
+사용자의 하루 일정을 분석해 일정 밀도, 충돌, 전환 시간 부족, 일정 유형, 미리 챙길 일을 정리해주는 캘린더 브리핑 웹 데모입니다.
 
-이 프로젝트는 OpenAI API를 바로 붙이기보다, 먼저 일정 분석, 페르소나 판단, 리스크 탐지, 추천 액션 생성이라는 핵심 제품 로직을 명확히 분리하는 데 초점을 맞췄습니다. 이후 LangGraph, VectorDB, Langfuse 같은 AI Agent 구성 요소를 자연스럽게 확장할 수 있도록 모듈형 구조로 설계했습니다.
+초기에는 Streamlit으로 빠르게 화면을 검증했고, 현재 제품형 데모는 **FastAPI + React** 구조로 구성했습니다. 백엔드는 기존 파이썬 분석 로직을 API로 제공하고, 프론트엔드는 밝고 카드 기반의 한국어 일정 브리핑 UI를 보여줍니다.
 
-## 프로젝트 목적
-
-이 프로젝트는 인공지능 에이전트 제품 역할 포트폴리오를 위해 만든 작은 제품 실험입니다. 단순히 거대 언어 모델로 문장을 생성하는 것이 아니라, 사용자의 실제 맥락을 구조화하고, 분석 가능한 신호로 바꾸고, 그 결과를 사용자에게 유용한 브리핑 형태로 전달하는 흐름을 보여주는 것이 목적입니다.
-
-## 아키텍처
+## 프로젝트 구조
 
 ```text
-app/main.py       입력 로드, 분석, 페르소나 분류, 브리핑 생성, JSON 저장을 오케스트레이션합니다.
-app/schema.py     일정 데이터 구조와 입력 파싱 로직을 정의합니다.
-app/analyzer.py   일정 수, 총 일정 시간, 카테고리 분포, 일정 충돌, 버퍼 부족을 분석합니다.
-app/persona.py    분석 결과를 바탕으로 사용자 페르소나를 분류합니다.
-app/briefing.py   사용자에게 보여줄 데일리 브리핑 결과를 생성합니다.
-data/             샘플 캘린더 입력 데이터를 저장합니다.
-app_ui.py         샘플 일정을 확인하고 분석할 수 있는 Streamlit UI입니다.
-logs/             생성된 결과 파일(result.json)을 저장합니다.
+calendar-briefing-agent/
+├── backend/
+│   ├── app/
+│   │   ├── main.py        FastAPI 엔드포인트
+│   │   ├── analyzer.py    일정 수, 총 시간, 충돌, 전환 시간 분석
+│   │   ├── persona.py     일정 유형 분류
+│   │   ├── briefing.py    요약, 조심할 점, 챙길 일 생성
+│   │   └── schema.py      일정 데이터 파싱
+│   ├── data/
+│   │   └── sample_schedule.json
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── styles.css
+│   ├── package.json
+│   └── tailwind.config.js
+├── app/                  기존 파이썬 프로토타입 로직
+├── app_ui.py             초기 Streamlit 프로토타입
+└── README.md
 ```
 
-핵심 분석 로직과 UI, CLI 실행 흐름을 분리해 두었기 때문에 이후 LLM 호출, Agent workflow, 추적/관측 기능을 추가하기 쉽습니다.
-
-## 주요 기능
-
-- `data/sample_schedule.json`에서 샘플 일정 데이터 로드
-- 전체 일정 개수 계산
-- 총 일정 시간 계산
-- 일정 카테고리 분포 분석
-- 겹치는 일정 충돌 탐지
-- 일정 사이 버퍼 시간이 부족한 구간 탐지
-- 사용자 페르소나 분류
-  - 업무 집중형 플래너
-  - 성장 지향형 플래너
-  - 균형 생활형 플래너
-  - 가벼운 일정형
-- 데일리 브리핑 생성
-  - 요약
-  - 페르소나 설명
-  - 일정 목록
-  - 리스크 메시지
-  - 추천 액션
-- Streamlit UI에서 일정 확인 및 분석 실행
-- 분석 결과를 `logs/result.json`에 저장
-
-## CLI 실행 방법
-
-프로젝트 루트에서 아래 명령어를 실행합니다.
+## 백엔드 실행
 
 ```bash
-python3 app/main.py
+cd backend
+python3 -m pip install -r requirements.txt
+python3 -m uvicorn app.main:app --reload --port 8000
 ```
 
-실행 결과는 아래 경로에 저장됩니다.
+백엔드는 `backend/data/sample_schedule.json`을 읽어 일정 데이터를 분석합니다.
+
+## 프론트엔드 실행
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+브라우저에서 아래 주소를 엽니다.
 
 ```text
-logs/result.json
+http://localhost:5173
 ```
 
-CLI 실행은 Python 표준 라이브러리만 사용합니다.
+프론트엔드는 FastAPI 백엔드의 아래 API를 호출합니다.
 
-## Streamlit UI 실행 방법
+```text
+http://localhost:8000/schedule
+http://localhost:8000/briefing
+```
 
-먼저 의존성을 설치합니다.
+## API 엔드포인트
+
+| Method | Endpoint | 설명 |
+| --- | --- | --- |
+| GET | `/health` | 백엔드 상태 확인 |
+| GET | `/schedule` | 샘플 일정 원본 데이터 반환 |
+| GET | `/briefing` | 일정 분석 결과, 일정 유형, 브리핑 결과 반환 |
+
+`/briefing` 응답은 다음 세 영역으로 구성됩니다.
+
+- `analysis`: 일정 수, 예정된 시간, 겹치는 일정, 전환 시간이 부족한 구간
+- `persona`: 하루 일정 유형과 설명
+- `briefing`: 오늘 하루 요약, 조심할 점, 미리 챙기면 좋은 것
+
+## UI Preview
+
+React UI는 밝은 배경, 넓은 여백, 부드러운 카드, 세로 타임라인을 사용합니다.
+
+- 상단에는 `오늘 일정 브리핑` 히어로 영역과 날짜/타임존 표시가 있습니다.
+- 왼쪽에는 오늘 일정이 시간순 타임라인 카드로 표시됩니다.
+- 오른쪽에는 `일정 수`, `예정된 시간`, `주의 구간`, `일정 유형` 요약 카드가 있습니다.
+- `오늘 일정 분석하기` 버튼을 누르면 `오늘 하루 요약`, `조심할 점`, `미리 챙기면 좋은 것`, `나의 일정 유형` 카드가 나타납니다.
+
+전체 톤은 개발자 대시보드가 아니라, 사용자가 하루를 시작할 때 자연스럽게 확인하는 한국어 생산성 앱을 목표로 합니다.
+
+## 검증
+
+백엔드 문법 확인:
 
 ```bash
-pip install -r requirements.txt
+python3 -m compileall backend/app
 ```
 
-프로젝트 루트에서 Streamlit 앱을 실행합니다.
+프론트엔드 빌드 확인:
 
 ```bash
-streamlit run app_ui.py
+cd frontend
+npm run build
 ```
 
-UI는 한국어로 표시됩니다. 기본적으로 `data/sample_schedule.json`을 불러오고, 일정 목록을 확인한 뒤 `일정 분석하기` 버튼을 눌러 분석 결과를 볼 수 있습니다.
+## 포트폴리오 관점
 
-## 출력 예시
+이 프로젝트는 단순한 화면 구현보다, 제품 흐름을 다음처럼 분리해 보여주는 데 의미가 있습니다.
 
-`logs/result.json`은 크게 두 영역으로 구성됩니다.
-
-- `analysis`: 일정 개수, 총 일정 시간, 카테고리 분포, 충돌, 버퍼 부족 등 구조화된 분석 결과
-- `briefing`: 페르소나, 요약, 리스크 메시지, 추천 액션 등 사용자에게 보여줄 브리핑 결과
-
-## 향후 개선 방향
-
-- OpenAI API를 연결해 자연어 브리핑 품질 개선
-- LangGraph를 활용해 분석, 판단, 추천 단계를 Agent workflow로 구성
-- VectorDB를 붙여 사용자 선호도, 과거 브리핑, 회의 메모 검색
-- Langfuse로 프롬프트, 실행 단계, 출력 결과 추적
-- Google Calendar 또는 Outlook Calendar 연동
-- 페르소나 분류와 추천 액션 품질을 평가할 수 있는 테스트 데이터셋 추가
-- 브리핑 히스토리와 일정 리스크를 볼 수 있는 UI 확장
-
-## AI/Agent Product Role과의 관련성
-
-이 프로젝트는 AI 기능을 단순히 API 호출로 처리하지 않고, 제품 관점에서 어떤 사용자 신호를 분석해야 하는지, 어떤 판단 로직이 필요한지, 어떤 결과를 사용자에게 전달해야 하는지를 분리해 보여줍니다.
-
-AI/Agent Product Role 관점에서는 다음 역량을 보여줄 수 있습니다.
-
-- 사용자 컨텍스트를 구조화하는 능력
-- Agent workflow로 확장 가능한 제품 구조 설계
-- 일정 충돌과 버퍼 부족 같은 실질적 리스크 정의
-- 페르소나 기반 개인화 로직 설계
-- 거대 언어 모델 도입 전 규칙 기반 최소 기능 제품으로 문제를 검증하는 접근
-- LangGraph, VectorDB, Langfuse로 확장 가능한 로드맵 제시
+- 일정 데이터를 구조화된 입력으로 다루는 방식
+- 일정 충돌과 전환 시간 부족처럼 사용자가 실제로 겪는 문제 정의
+- 분석 로직과 사용자 화면을 분리한 FastAPI + React 구조
+- 빠른 Streamlit 프로토타입에서 제품형 웹 데모로 확장하는 과정
+- 이후 Google Calendar, Outlook Calendar, 날씨 API, 개인화 브리핑으로 확장 가능한 기반
