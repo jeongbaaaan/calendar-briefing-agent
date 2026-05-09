@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import sys
+from datetime import date, datetime, time
 from pathlib import Path
+from uuid import uuid4
 
 import streamlit as st
 
@@ -10,6 +12,7 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parent
 APP_DIR = PROJECT_ROOT / "app"
 DATA_PATH = PROJECT_ROOT / "data" / "sample_schedule.json"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
 if str(APP_DIR) not in sys.path:
     sys.path.insert(0, str(APP_DIR))
@@ -20,284 +23,200 @@ from persona import classify_persona
 from schema import parse_schedule_file, schedule_to_dict
 
 
-def load_schedules() -> tuple[list[object], list[dict[str, object]]]:
-    raw_data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    schedules = parse_schedule_file(raw_data)
-    ordered = sorted(schedules, key=lambda item: item.start)
-    return ordered, [schedule_to_dict(schedule) for schedule in ordered]
+CATEGORY_OPTIONS = ["업무", "회의", "고객", "운영", "학습", "네트워킹", "건강", "개인", "가족"]
 
 
-def run_analysis() -> dict[str, object]:
-    raw_data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
-    schedules = parse_schedule_file(raw_data)
-    analysis = analyze_schedule(schedules)
-    persona = classify_persona(analysis)
-    briefing = generate_briefing(schedules, analysis, persona)
+def load_raw_data() -> dict[str, object]:
+    return json.loads(DATA_PATH.read_text(encoding="utf-8"))
 
-    return {
-        "analysis": analysis,
-        "persona": persona,
-        "briefing": briefing,
+
+def save_raw_data(raw_data: dict[str, object]) -> None:
+    DATA_PATH.write_text(json.dumps(raw_data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def get_schedule_models(schedule_items: list[dict[str, object]]) -> list[object]:
+    raw_data = {
+        "date": st.session_state.schedule_date.isoformat(),
+        "timezone": st.session_state.raw_data.get("timezone", "Asia/Seoul"),
+        "schedules": schedule_items,
     }
+    return sorted(parse_schedule_file(raw_data), key=lambda item: item.start)
+
+
+def get_schedule_rows(schedule_items: list[dict[str, object]]) -> list[dict[str, object]]:
+    return [schedule_to_dict(schedule) for schedule in get_schedule_models(schedule_items)]
+
+
+def schedules_for_date(schedule_items: list[dict[str, object]], selected_date: date) -> list[dict[str, object]]:
+    return [
+        item
+        for item in schedule_items
+        if datetime.strptime(str(item["start"]), DATETIME_FORMAT).date() == selected_date
+    ]
+
+
+def initialize_state() -> None:
+    if "raw_data" not in st.session_state:
+        raw_data = load_raw_data()
+        st.session_state.raw_data = raw_data
+        st.session_state.schedule_items = list(raw_data.get("schedules", []))
+        st.session_state.schedule_date = datetime.strptime(str(raw_data.get("date")), "%Y-%m-%d").date()
+
+
+def add_schedule(
+    title: str,
+    category: str,
+    selected_date: date,
+    start_time: time,
+    end_time: time,
+    location: str,
+    notes: str,
+) -> tuple[bool, str]:
+    start_dt = datetime.combine(selected_date, start_time)
+    end_dt = datetime.combine(selected_date, end_time)
+
+    if not title.strip():
+        return False, "일정명을 입력해주세요."
+
+    if end_dt <= start_dt:
+        return False, "종료 시간은 시작 시간보다 뒤여야 합니다."
+
+    st.session_state.schedule_items.append(
+        {
+            "id": f"evt-{uuid4().hex[:8]}",
+            "title": title.strip(),
+            "category": category,
+            "start": start_dt.strftime(DATETIME_FORMAT),
+            "end": end_dt.strftime(DATETIME_FORMAT),
+            "location": location.strip() or "미정",
+            "notes": notes.strip() or "메모 없음",
+        }
+    )
+    return True, "일정이 추가되었습니다."
+
+
+def remove_schedule(schedule_id: str) -> None:
+    st.session_state.schedule_items = [
+        item for item in st.session_state.schedule_items if item.get("id") != schedule_id
+    ]
+
+
+def persist_current_data() -> None:
+    st.session_state.raw_data["date"] = st.session_state.schedule_date.isoformat()
+    st.session_state.raw_data["schedules"] = st.session_state.schedule_items
+    save_raw_data(st.session_state.raw_data)
+
+
+def render_schedule_card(schedule: dict[str, object]) -> None:
+    with st.container(border=True):
+        top_columns = st.columns([3, 1])
+        with top_columns[0]:
+            st.markdown(f"**{schedule['title']}**")
+            st.caption(f"{schedule['start']} - {schedule['end']}")
+        with top_columns[1]:
+            if st.button("삭제", key=f"delete-{schedule['id']}"):
+                remove_schedule(str(schedule["id"]))
+                st.rerun()
+
+        st.write(f"{schedule['category']} · {schedule['location']}")
+        st.caption(str(schedule["notes"]))
 
 
 st.set_page_config(page_title="캘린더 브리핑 에이전트", layout="wide")
+initialize_state()
 
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background: #f7f9fc;
-        color: #191f28;
-    }
-    [data-testid="stHeader"] {
-        background: rgba(247, 249, 252, 0.85);
-    }
-    .main .block-container {
-        max-width: 1040px;
-        padding-top: 2.5rem;
-        padding-bottom: 3rem;
-    }
-    h1, h2, h3 {
-        letter-spacing: 0;
-    }
-    .hero {
-        background: #ffffff;
-        border: 1px solid #e5e8ef;
-        border-radius: 24px;
-        padding: 34px 36px;
-        box-shadow: 0 20px 48px rgba(25, 31, 40, 0.06);
-        margin-bottom: 22px;
-    }
-    .eyebrow {
-        color: #3182f6;
-        font-size: 15px;
-        font-weight: 700;
-        margin-bottom: 14px;
-    }
-    .hero-title {
-        color: #191f28;
-        font-size: 42px;
-        line-height: 1.18;
-        font-weight: 800;
-        margin-bottom: 14px;
-    }
-    .hero-copy {
-        color: #4e5968;
-        font-size: 18px;
-        line-height: 1.6;
-        margin-bottom: 0;
-    }
-    .section-title {
-        color: #191f28;
-        font-size: 24px;
-        font-weight: 800;
-        margin: 30px 0 12px;
-    }
-    .soft-card {
-        background: #ffffff;
-        border: 1px solid #e5e8ef;
-        border-radius: 20px;
-        padding: 22px 24px;
-        box-shadow: 0 12px 30px rgba(25, 31, 40, 0.04);
-        height: 100%;
-    }
-    .metric-label {
-        color: #8b95a1;
-        font-size: 14px;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-    .metric-value {
-        color: #191f28;
-        font-size: 30px;
-        font-weight: 800;
-        line-height: 1.2;
-    }
-    .metric-sub {
-        color: #6b7684;
-        font-size: 14px;
-        margin-top: 8px;
-        line-height: 1.5;
-    }
-    .timeline-item {
-        background: #ffffff;
-        border: 1px solid #e5e8ef;
-        border-radius: 18px;
-        padding: 18px 20px;
-        margin-bottom: 10px;
-    }
-    .timeline-time {
-        color: #3182f6;
-        font-size: 14px;
-        font-weight: 800;
-        margin-bottom: 6px;
-    }
-    .timeline-title {
-        color: #191f28;
-        font-size: 18px;
-        font-weight: 800;
-        margin-bottom: 6px;
-    }
-    .timeline-meta {
-        color: #6b7684;
-        font-size: 14px;
-        line-height: 1.5;
-    }
-    .risk-box {
-        background: #fff7f0;
-        border: 1px solid #ffd8b5;
-        border-radius: 18px;
-        color: #8a3a00;
-        padding: 18px 20px;
-        font-weight: 700;
-        line-height: 1.6;
-    }
-    .action-item {
-        background: #eef6ff;
-        border: 1px solid #cfe5ff;
-        border-radius: 16px;
-        color: #1b64da;
-        padding: 16px 18px;
-        margin-bottom: 10px;
-        font-weight: 700;
-    }
-    div.stButton > button {
-        width: 100%;
-        border-radius: 16px;
-        min-height: 54px;
-        font-size: 17px;
-        font-weight: 800;
-        background: #3182f6;
-        border: 0;
-    }
-    div.stButton > button:hover {
-        background: #1b64da;
-        border: 0;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+st.title("캘린더 브리핑 에이전트")
+st.caption("일정을 직접 입력하고, 하루의 리스크와 추천 액션을 바로 확인하는 캘린더 브리핑 MVP입니다.")
 
-st.markdown(
-    """
-    <div class="hero">
-      <div class="eyebrow">오늘의 캘린더 브리핑</div>
-      <div class="hero-title">일정을 넣으면<br>하루의 리스크와 우선순위가 바로 보입니다</div>
-      <p class="hero-copy">캘린더 데이터를 분석해 사용자 페르소나, 일정 충돌, 전환 시간 부족, 추천 액션을 한 화면에서 정리합니다.</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+selected_date = st.date_input("브리핑 날짜", value=st.session_state.schedule_date)
+st.session_state.schedule_date = selected_date
 
-ordered_schedules, schedule_rows = load_schedules()
+selected_items = schedules_for_date(st.session_state.schedule_items, selected_date)
+selected_models = get_schedule_models(selected_items)
+selected_rows = get_schedule_rows(selected_items)
 
-preview_analysis = analyze_schedule(ordered_schedules)
-preview_persona = classify_persona(preview_analysis)
+analysis = analyze_schedule(selected_models) if selected_models else None
+persona = classify_persona(analysis) if analysis else None
 
-metric_columns = st.columns(3)
-with metric_columns[0]:
-    st.markdown(
-        f"""
-        <div class="soft-card">
-          <div class="metric-label">오늘의 유형</div>
-          <div class="metric-value">{preview_persona["name"]}</div>
-          <div class="metric-sub">{preview_persona["rationale"]}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with metric_columns[1]:
-    st.markdown(
-        f"""
-        <div class="soft-card">
-          <div class="metric-label">전체 일정</div>
-          <div class="metric-value">{preview_analysis["total_schedules"]}개</div>
-          <div class="metric-sub">오늘 등록된 일정 수입니다.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-with metric_columns[2]:
-    st.markdown(
-        f"""
-        <div class="soft-card">
-          <div class="metric-label">총 일정 시간</div>
-          <div class="metric-value">{preview_analysis["total_scheduled_hours"]}시간</div>
-          <div class="metric-sub">캘린더에 이미 배정된 시간입니다.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+summary_columns = st.columns(4)
+summary_columns[0].metric("선택한 날짜", selected_date.strftime("%Y-%m-%d"))
+summary_columns[1].metric("전체 일정 수", analysis["total_schedules"] if analysis else 0)
+summary_columns[2].metric("총 일정 시간", analysis["total_scheduled_hours"] if analysis else 0)
+summary_columns[3].metric("오늘의 유형", persona["name"] if persona else "일정 없음")
 
-st.markdown('<div class="section-title">일정 타임라인</div>', unsafe_allow_html=True)
-for schedule in schedule_rows:
-    st.markdown(
-        f"""
-        <div class="timeline-item">
-          <div class="timeline-time">{schedule["start"]} - {schedule["end"]}</div>
-          <div class="timeline-title">{schedule["title"]}</div>
-          <div class="timeline-meta">{schedule["category"]} · {schedule["location"]}<br>{schedule["notes"]}</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+calendar_tab, briefing_tab = st.tabs(["캘린더", "데일리 브리핑"])
 
-with st.expander("표로 일정 보기"):
-    st.dataframe(
-        schedule_rows,
-        width="stretch",
-        hide_index=True,
-        column_order=["title", "category", "start", "end", "duration_hours", "location", "notes"],
-        column_config={
-            "title": "일정명",
-            "category": "카테고리",
-            "start": "시작 시간",
-            "end": "종료 시간",
-            "duration_hours": "소요 시간",
-            "location": "장소",
-            "notes": "메모",
-        },
-    )
+with calendar_tab:
+    input_column, list_column = st.columns([1, 1.4])
 
-st.markdown('<div class="section-title">데일리 브리핑 만들기</div>', unsafe_allow_html=True)
-st.caption("버튼을 누르면 같은 분석 로직으로 오늘의 리스크 메시지와 추천 액션을 생성합니다.")
+    with input_column:
+        st.subheader("일정 추가")
+        with st.form("schedule-form", clear_on_submit=True):
+            title = st.text_input("일정명", placeholder="예: 고객 인터뷰")
+            category = st.selectbox("카테고리", CATEGORY_OPTIONS)
+            start_time = st.time_input("시작 시간", value=time(9, 0), step=900)
+            end_time = st.time_input("종료 시간", value=time(10, 0), step=900)
+            location = st.text_input("장소", placeholder="예: 구글 미트")
+            notes = st.text_area("메모", placeholder="이 일정에서 준비하거나 확인할 내용을 적어주세요.")
+            submitted = st.form_submit_button("일정 추가하기", type="primary")
 
-if st.button("일정 분석하기", type="primary"):
-    result = run_analysis()
-    analysis = result["analysis"]
-    persona = result["persona"]
-    briefing = result["briefing"]
+        if submitted:
+            ok, message = add_schedule(title, category, selected_date, start_time, end_time, location, notes)
+            if ok:
+                st.success(message)
+                st.rerun()
+            else:
+                st.error(message)
 
-    st.markdown('<div class="section-title">데일리 브리핑</div>', unsafe_allow_html=True)
-    briefing_columns = st.columns([1, 1])
-    with briefing_columns[0]:
-        st.markdown(
-            f"""
-            <div class="soft-card">
-              <div class="metric-label">사용자 페르소나</div>
-              <div class="metric-value">{persona["name"]}</div>
-              <div class="metric-sub">{persona["rationale"]}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with briefing_columns[1]:
-        st.markdown(
-            f"""
-            <div class="soft-card">
-              <div class="metric-label">분석 요약</div>
-              <div class="metric-value">{analysis["total_schedules"]}개 · {analysis["total_scheduled_hours"]}시간</div>
-              <div class="metric-sub">전체 일정 수와 총 일정 시간입니다.</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.divider()
+        if st.button("현재 일정 저장하기"):
+            persist_current_data()
+            st.success("data/sample_schedule.json에 저장했습니다.")
 
-    st.markdown('<div class="section-title">주의할 점</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="risk-box">{briefing["risk_message"]}</div>', unsafe_allow_html=True)
+    with list_column:
+        st.subheader("일정 목록")
+        if not selected_rows:
+            st.info("선택한 날짜에 등록된 일정이 없습니다. 왼쪽에서 새 일정을 추가해보세요.")
+        else:
+            for schedule in selected_rows:
+                render_schedule_card(schedule)
 
-    st.markdown('<div class="section-title">추천 액션</div>', unsafe_allow_html=True)
-    for action in briefing["recommended_actions"]:
-        st.markdown(f'<div class="action-item">{action}</div>', unsafe_allow_html=True)
+        with st.expander("표로 보기"):
+            st.dataframe(
+                selected_rows,
+                width="stretch",
+                hide_index=True,
+                column_order=["title", "category", "start", "end", "duration_hours", "location", "notes"],
+                column_config={
+                    "title": "일정명",
+                    "category": "카테고리",
+                    "start": "시작 시간",
+                    "end": "종료 시간",
+                    "duration_hours": "소요 시간",
+                    "location": "장소",
+                    "notes": "메모",
+                },
+            )
+
+with briefing_tab:
+    st.subheader("데일리 브리핑")
+
+    if not selected_models:
+        st.info("브리핑을 생성하려면 선택한 날짜에 일정을 추가해주세요.")
+    elif st.button("일정 분석하기", type="primary"):
+        briefing = generate_briefing(selected_models, analysis, persona)
+
+        persona_column, summary_column = st.columns(2)
+        persona_column.metric("사용자 페르소나", persona["name"])
+        persona_column.write(persona["rationale"])
+        summary_column.metric("전체 일정 수", analysis["total_schedules"])
+        summary_column.metric("총 일정 시간", analysis["total_scheduled_hours"])
+
+        st.warning(briefing["risk_message"])
+
+        st.markdown("#### 추천 액션")
+        for action in briefing["recommended_actions"]:
+            st.write(f"- {action}")
+
+        with st.expander("분석 상세 보기"):
+            st.json(analysis)
