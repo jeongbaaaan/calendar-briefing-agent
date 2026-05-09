@@ -42,7 +42,7 @@ logs/             생성된 결과 파일(result.json)을 저장합니다.
   - 일정 목록
   - 리스크 메시지
   - 추천 액션
-- Streamlit UI에서 일정 확인 및 분석 실행
+- 토스처럼 간결한 한국어 Streamlit UI에서 일정 확인 및 분석 실행
 - 분석 결과를 `logs/result.json`에 저장
 
 ## CLI 실행 방법
@@ -75,7 +75,7 @@ pip install -r requirements.txt
 streamlit run app_ui.py
 ```
 
-UI는 한국어로 표시됩니다. 기본적으로 `data/sample_schedule.json`을 불러오고, 일정 목록을 확인한 뒤 `일정 분석하기` 버튼을 눌러 분석 결과를 볼 수 있습니다.
+UI는 한국어로 표시됩니다. 토스처럼 핵심 정보가 먼저 보이도록 오늘의 유형, 전체 일정 수, 총 일정 시간, 일정 타임라인을 먼저 보여주고, `일정 분석하기` 버튼을 눌러 리스크와 추천 액션을 확인할 수 있습니다.
 
 ## 출력 예시
 
