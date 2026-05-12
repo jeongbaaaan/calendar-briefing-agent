@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .analyzer import analyze_schedule
 from .briefing import generate_briefing
+from .encouragement import generate_encouragement
 from .persona import classify_persona
 from .schema import parse_schedule_file
 
@@ -51,9 +52,11 @@ def get_briefing() -> dict[str, Any]:
     analysis = analyze_schedule(schedules)
     persona = classify_persona(analysis)
     briefing = generate_briefing(schedules, analysis, persona)
+    encouragement = generate_encouragement(analysis, persona)
 
     return {
         "analysis": analysis,
         "persona": persona,
         "briefing": briefing,
+        "encouragement": encouragement,
     }
