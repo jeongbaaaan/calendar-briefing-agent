@@ -1,12 +1,20 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from datetime import date, datetime, time
 from pathlib import Path
 from uuid import uuid4
 
 import streamlit as st
+
+# Load .env if present
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent / ".env")
+except ImportError:
+    pass
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -225,6 +233,33 @@ def render_wellness_risks(wellness: dict) -> None:
 st.set_page_config(page_title="캘린더 브리핑 에이전트", layout="wide", page_icon="📅")
 initialize_state()
 
+# ── Sidebar: API key & settings ───────────────────────────────────────────────
+with st.sidebar:
+    st.header("⚙️ 설정")
+
+    env_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if env_key:
+        st.success("Claude API 키가 환경 변수에서 감지되었습니다.")
+        active_api_key = env_key
+    else:
+        input_key = st.text_input(
+            "Anthropic API 키",
+            type="password",
+            placeholder="sk-ant-...",
+            help="https://console.anthropic.com 에서 발급받은 API 키를 입력하세요.",
+        )
+        if input_key.strip():
+            os.environ["ANTHROPIC_API_KEY"] = input_key.strip()
+            active_api_key = input_key.strip()
+            st.success("API 키가 적용되었습니다.")
+        else:
+            active_api_key = ""
+            st.info("API 키를 입력하면 Claude AI 브리핑이 활성화됩니다.")
+
+    st.divider()
+    st.caption("모델: claude-sonnet-4-6")
+    st.caption("브리핑은 AI 비서 브리핑 탭에서 생성하세요.")
+
 st.title("📅 캘린더 브리핑 에이전트")
 st.caption("일정을 입력하면 AI 개인 비서가 건강·컨디션·바이오리듬·이동 경로를 챙겨드립니다.")
 
@@ -355,12 +390,16 @@ with secretary_tab:
         # AI briefing
         st.markdown("#### ✉️ 오늘의 비서 브리핑")
 
-        import os
-        has_api_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
+        has_api_key = bool(active_api_key)
         if not has_api_key:
-            st.caption("💡 `ANTHROPIC_API_KEY` 환경 변수를 설정하면 Claude AI가 자연어로 브리핑을 생성합니다.")
+            st.info(
+                "왼쪽 사이드바에서 **Anthropic API 키**를 입력하면 "
+                "Claude AI가 건강·바이오리듬·이동 경로를 종합해 자연어로 브리핑을 생성합니다.",
+                icon="🔑",
+            )
 
-        if st.button("브리핑 생성하기", type="primary", key="secretary-btn"):
+        btn_label = "✨ Claude 비서 브리핑 생성" if has_api_key else "📝 룰 기반 브리핑 생성"
+        if st.button(btn_label, type="primary", key="secretary-btn"):
             briefing_area = st.empty()
             with st.spinner("비서가 오늘 일정을 살펴보는 중..."):
                 if has_api_key:
@@ -373,11 +412,15 @@ with secretary_tab:
                     for chunk in result:
                         full_text += chunk
                         briefing_area.markdown(
-                            f'<div style="background:var(--background-color,#f8fafc);'
-                            f'border-left:4px solid #6366f1;padding:16px 20px;'
-                            f'border-radius:8px;line-height:1.8;">{full_text}</div>',
+                            f'<div style="border-left:4px solid #6366f1;padding:16px 20px;'
+                            f'border-radius:8px;line-height:1.9;white-space:pre-wrap;">{full_text}▌</div>',
                             unsafe_allow_html=True,
                         )
+                    briefing_area.markdown(
+                        f'<div style="border-left:4px solid #6366f1;padding:16px 20px;'
+                        f'border-radius:8px;line-height:1.9;white-space:pre-wrap;">{full_text}</div>',
+                        unsafe_allow_html=True,
+                    )
                 else:
                     text = secretary.generate(
                         selected_models, analysis, wellness, persona,
@@ -385,9 +428,8 @@ with secretary_tab:
                         stream=False,
                     )
                     briefing_area.markdown(
-                        f'<div style="background:var(--background-color,#f8fafc);'
-                        f'border-left:4px solid #6366f1;padding:16px 20px;'
-                        f'border-radius:8px;line-height:1.8;">{text}</div>',
+                        f'<div style="border-left:4px solid #9ca3af;padding:16px 20px;'
+                        f'border-radius:8px;line-height:1.9;white-space:pre-wrap;">{text}</div>',
                         unsafe_allow_html=True,
                     )
 
